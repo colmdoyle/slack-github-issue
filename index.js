@@ -2,11 +2,12 @@ var Client  = require('slack-client'),
     request = require('request');
 
 module.exports = Client;
- 
+
 // Create a new bot at https://YOURSLACK.slack.com/services/new/bot
-var BOT_TOKEN  = 'YOURSLACK-BOT-TOKEN',
-    REPO_OWNER = 'augbog',
-    REPO_NAME  = 'slack-github-issue';
+var BOT_TOKEN  = process.env.SLACK_BOT_TOKEN,
+    REPO_OWNER = process.env.ORGANISATION,
+    REPO_NAME  = process.env.REPOSITORY,
+    GITHUB_TOKEN = process.env.GITHUB_TOKEN;
 
 var slack = new Client(BOT_TOKEN, true, true);
 
@@ -15,26 +16,26 @@ slack.on('open', function () {
         .map(function (k) { return slack.channels[k]; })
         .filter(function (c) { return c.is_member; })
         .map(function (c) { return c.name; });
- 
+
     var groups = Object.keys(slack.groups)
         .map(function (k) { return slack.groups[k]; })
         .filter(function (g) { return g.is_open && !g.is_archived; })
         .map(function (g) { return g.name; });
- 
+
     console.log('Welcome to Slack. You are ' + slack.self.name + ' of ' + slack.team.name);
- 
+
     if (channels.length > 0) {
         console.log('You are in: ' + channels.join(', '));
     }
     else {
         console.log('You are not in any channels.');
     }
- 
+
     if (groups.length > 0) {
        console.log('As well as: ' + groups.join(', '));
     }
 });
- 
+
 // when someone posts to the channel
 slack.on('message', function(message) {
     var channel = slack.getChannelGroupOrDMByID(message.channel);
@@ -49,7 +50,8 @@ slack.on('message', function(message) {
               method: 'GET',
               headers: {
                 'User-Agent':   'Super Agent/0.0.1',
-                'Content-Type': 'application/x-www-form-urlencoded'
+                'Content-Type': 'application/x-www-form-urlencoded',
+                'Authorization': 'token ' + GITHUB_TOKEN
               }
             };
 
@@ -64,5 +66,5 @@ slack.on('message', function(message) {
       }
     }
 });
- 
+
 slack.login();
