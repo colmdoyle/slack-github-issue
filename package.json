@@ -17,7 +17,9 @@
   },
   "homepage": "https://github.com/augbog/slack-github-issue",
   "devDependencies": {
-    "slack-client": "~1.4.1",
     "request": "~2.58.0"
+  },
+  "dependencies": {
+    "@slack/client": "^3.6.0"
   }
 }
