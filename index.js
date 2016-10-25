@@ -10,32 +10,18 @@ var BOT_TOKEN  = process.env.SLACK_BOT_TOKEN,
     REPO_NAME  = process.env.REPOSITORY,
     GITHUB_TOKEN = process.env.GITHUB_TOKEN;
 
-var slack = new RtmClient(BOT_TOKEN, { logLevel: 'debug' });
+var slack = new RtmClient(BOT_TOKEN);
 var web = new WebClient(BOT_TOKEN);
 
 slack.on(RTM_CLIENT_EVENTS.RTM_CONNECTION_OPENED, function () {
-    var channels = Object.keys(slack.channels)
-        .map(function (k) { return slack.channels[k]; })
-        .filter(function (c) { return c.is_member; })
-        .map(function (c) { return c.name; });
+        // Get the user's name
+        var user = slack.dataStore.getUserById(rtm.activeUserId);
 
-    var groups = Object.keys(slack.groups)
-        .map(function (k) { return slack.groups[k]; })
-        .filter(function (g) { return g.is_open && !g.is_archived; })
-        .map(function (g) { return g.name; });
+        // Get the team's name
+        var team = slack.dataStore.getTeamById(rtm.activeTeamId);
 
-    console.log('Welcome to Slack. You are ' + slack.self.name + ' of ' + slack.team.name);
-
-    if (channels.length > 0) {
-        console.log('You are in: ' + channels.join(', '));
-    }
-    else {
-        console.log('You are not in any channels.');
-    }
-
-    if (groups.length > 0) {
-       console.log('As well as: ' + groups.join(', '));
-    }
+        // Log the slack team name and the bot's name
+        console.log('Connected to ' + team.name + ' as ' + user.name);
 });
 
 // when someone posts to the channel
