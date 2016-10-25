@@ -74,6 +74,12 @@ slack.on(RTM_EVENTS.MESSAGE, function(message) {
               icon_emoji: ":whale:"
             }
             web.chat.postMessage(channel, '', data, function () {});
+          } else if (json.message == 'Not Found') {
+            var data = {
+              username: "Issues Bot",
+              icon_emoji: ":whale:"
+            }
+            web.chat.postMessage(channel, 'Could not find that issue in ' + REPO_OWNER +'/' + REPO_NAME, data, function () {});
           }
         });
       }
