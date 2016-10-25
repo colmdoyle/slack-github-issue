@@ -41,9 +41,12 @@ slack.on(RTM_EVENTS.MESSAGE, function(message) {
     if (message.type === 'message' && message.hasOwnProperty('text')) {
         if (message.text.indexOf('#') > -1) {
             var issueNum = message.text.substr(message.text.indexOf('#')).split(' ')[0];
-        } else if (/^(<https:\/\/github.com\/KitmanLabs\/projects\/issues\/[0-9]+>)$/.test(message.text)) {
-            var issueNumWithExtraChar = message.text.substr(message.text).split('/')[6];
-            var issueNum = '#' + issueNumWithExtraChar.substr(0, issueNumWithExtraChar.length - 1)
+        } else if (message.text.indexOf('<') > -1) {
+          var issueNumWithExtraChar = message.text.substr(message.text.indexOf('<')).split('/')[6];
+          // TODO - Remove KitmanLabs hardcoding.
+          if (/^(<https:\/\/github.com\/KitmanLabs\/projects\/issues\/[0-9]+>)$/.test(message.text.substr(message.text.indexOf('<')).split(' ')[0])) {
+            var issueNum = '#' + issueNumWithExtraChar.substr(0, issueNumWithExtraChar.indexOf('>'))
+          }
         }
         if (issueNum && (/^#\d+$/.test(issueNum))) {
             var issueDescription,
@@ -61,7 +64,7 @@ slack.on(RTM_EVENTS.MESSAGE, function(message) {
             request(options, function(error, response, body) {
                 var json = JSON.parse(body);
                 if (!error && response.statusCode == 200) {
-                    var pretext = '<' + json.html_url + '|Issue #' + json.number + '>'
+                    var pretext = '<' + json.html_url + '|Click here to open #' + json.number + ' in GitHub>'
                     var title = json.title;
                     var text = json.body;
                     var mrkdwn_in = ["text"];
