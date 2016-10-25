@@ -19,7 +19,7 @@ var BOT_TOKEN = process.env.SLACK_BOT_TOKEN,
     REPO_NAME = process.env.REPOSITORY,
     GITHUB_TOKEN = process.env.GITHUB_TOKEN;
 
-var slack = new RtmClient(BOT_TOKEN);
+var slack = new RtmClient(BOT_TOKEN); // , {logLevel: 'debug'} <- Use for debugging
 var web = new WebClient(BOT_TOKEN);
 
 slack.on(RTM_CLIENT_EVENTS.RTM_CONNECTION_OPENED, function() {
@@ -38,9 +38,14 @@ slack.on(RTM_EVENTS.MESSAGE, function(message) {
     var channel = message.channel;
 
     // if we find a #...
-    if (message.type === 'message' && message.hasOwnProperty('text') && message.text.indexOf('#') > -1) {
-        var issueNum = message.text.substr(message.text.indexOf('#')).split(' ')[0];
-        if (/^#\d+$/.test(issueNum)) {
+    if (message.type === 'message' && message.hasOwnProperty('text')) {
+        if (message.text.indexOf('#') > -1) {
+            var issueNum = message.text.substr(message.text.indexOf('#')).split(' ')[0];
+        } else if (/^(<https:\/\/github.com\/KitmanLabs\/projects\/issues\/[0-9]+>)$/.test(message.text)) {
+            var issueNumWithExtraChar = message.text.substr(message.text).split('/')[6];
+            var issueNum = '#' + issueNumWithExtraChar.substr(0, issueNumWithExtraChar.length - 1)
+        }
+        if (issueNum && (/^#\d+$/.test(issueNum))) {
             var issueDescription,
                 options = {
                     url: 'https://api.github.com/repos/' + REPO_OWNER + '/' + REPO_NAME + '/issues/' + issueNum.substr(1),
