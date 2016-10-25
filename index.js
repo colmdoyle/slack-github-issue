@@ -46,13 +46,13 @@ slack.on(RTM_EVENTS.MESSAGE, function(message) {
                     url: 'https://api.github.com/repos/' + REPO_OWNER + '/' + REPO_NAME + '/issues/' + issueNum.substr(1),
                     method: 'GET',
                     headers: {
+                        //Github API requires User Agent
                         'User-Agent': 'Super Agent/0.0.1',
                         'Content-Type': 'application/x-www-form-urlencoded',
                         'Authorization': 'token ' + GITHUB_TOKEN
                     }
                 };
 
-            //Github API requires User Agent
             request(options, function(error, response, body) {
                 var json = JSON.parse(body);
                 if (!error && response.statusCode == 200) {
