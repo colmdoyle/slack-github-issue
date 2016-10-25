@@ -12,6 +12,10 @@ http.createServer(function(req, res) {
     });
     res.send('it is running\n');
 }).listen(process.env.PORT || 5000);
+// Heroku Keep Alive
+setInterval(function() {
+    http.get("http://"+process.env.HEROKU_APP_NAME+".herokuapp.com");
+}, 300000); // every 5 minutes (300000)
 
 // Create a new bot at https://YOURSLACK.slack.com/services/new/bot
 var BOT_TOKEN = process.env.SLACK_BOT_TOKEN,
