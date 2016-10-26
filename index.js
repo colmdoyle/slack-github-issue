@@ -69,6 +69,7 @@ slack.on(RTM_EVENTS.MESSAGE, function(message) {
                     var text = json.body;
                     var mrkdwn_in = ["text"];
                     var fields = []
+                    // Labels
                     if (json.labels.length > 0) {
                       var label_titles = [];
                       json.labels.forEach( function(label) {
@@ -81,6 +82,21 @@ slack.on(RTM_EVENTS.MESSAGE, function(message) {
                       }
                       fields.push(labels_field)
                     }
+                    // Assignees
+                    var assignees_names = [];
+                    if (json.assignees.length > 0) {
+                      json.assignees.forEach( function(assignee) {
+                        assignees_names.push(assignee.login);
+                      });
+                    } else {
+                      assignees_names.push("Unassigned")
+                    }
+                    var assignees_field = {
+                      "title": "Assigned to",
+                      "value": assignees_names.join(', '),
+                      "short": false
+                    }
+                    fields.push(assignees_field)
                     var attachment = {
                         "pretext": pretext,
                         "title": title,
