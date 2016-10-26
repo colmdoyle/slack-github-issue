@@ -82,6 +82,7 @@ slack.on(RTM_EVENTS.MESSAGE, function(message) {
                       }
                       fields.push(labels_field)
                     }
+
                     // Assignees
                     var assignees_names = [];
                     if (json.assignees.length > 0) {
@@ -97,6 +98,16 @@ slack.on(RTM_EVENTS.MESSAGE, function(message) {
                       "short": false
                     }
                     fields.push(assignees_field)
+
+                    // Milestone
+                    if (json.milestone != null) {
+                      fields.push({
+                        "title": "Milestone",
+                        "value": json.milestone.title,
+                        "short": true
+                      });
+                    }
+
                     var attachment = {
                         "pretext": pretext,
                         "title": title,
