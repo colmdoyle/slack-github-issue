@@ -19,7 +19,7 @@ var BOT_TOKEN = process.env.SLACK_BOT_TOKEN,
     REPO_NAME = process.env.REPOSITORY,
     GITHUB_TOKEN = process.env.GITHUB_TOKEN;
 
-var slack = new RtmClient(BOT_TOKEN, {logLevel: 'warn'}); // , {logLevel: 'debug'} <- Use for debugging
+var slack = new RtmClient(BOT_TOKEN, {logLevel: 'info'}); // , {logLevel: 'debug'} <- Use for debugging
 var web = new WebClient(BOT_TOKEN);
 
 slack.on(RTM_CLIENT_EVENTS.RTM_CONNECTION_OPENED, function() {
@@ -30,7 +30,7 @@ slack.on(RTM_CLIENT_EVENTS.RTM_CONNECTION_OPENED, function() {
     var team = slack.dataStore.getTeamById(rtm.activeTeamId);
 
     // Log the slack team name and the bot's name
-    console.log('Connected to ' + team.name + ' as ' + user.name);
+    console.info('Connected to ' + team.name + ' as ' + user.name);
 });
 
 // when someone posts to the channel
@@ -122,7 +122,7 @@ slack.on(RTM_EVENTS.MESSAGE, function(message) {
                         username: "Issues Bot",
                         icon_emoji: ":whale:"
                     }
-                    console.warn(attachment);
+                    console.info(attachment);
                     web.chat.postMessage(channel, '', data, function() {});
                 } else if (json.message == 'Not Found') {
                     var data = {
