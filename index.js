@@ -19,7 +19,7 @@ var BOT_TOKEN = process.env.SLACK_BOT_TOKEN,
     REPO_NAME = process.env.REPOSITORY,
     GITHUB_TOKEN = process.env.GITHUB_TOKEN;
 
-var slack = new RtmClient(BOT_TOKEN); // , {logLevel: 'debug'} <- Use for debugging
+var slack = new RtmClient(BOT_TOKEN, {logLevel: 'warn'}); // , {logLevel: 'debug'} <- Use for debugging
 var web = new WebClient(BOT_TOKEN);
 
 slack.on(RTM_CLIENT_EVENTS.RTM_CONNECTION_OPENED, function() {
@@ -68,11 +68,25 @@ slack.on(RTM_EVENTS.MESSAGE, function(message) {
                     var title = json.title;
                     var text = json.body;
                     var mrkdwn_in = ["text"];
+                    var fields = []
+                    if (json.labels.length > 0) {
+                      var label_titles = [];
+                      json.labels.forEach( function(label) {
+                        label_titles.push(label.name);
+                      });
+                      var labels_field = {
+                        "title": "Labels",
+                        "value": label_titles.join(', '),
+                        "short": false
+                      }
+                      fields.push(labels_field)
+                    }
                     var attachment = {
                         "pretext": pretext,
                         "title": title,
                         "text": text,
-                        "mrkdwn_in": mrkdwn_in
+                        "mrkdwn_in": mrkdwn_in,
+                        "fields": fields
                     };
                     var data = {
                         attachments: [
@@ -81,6 +95,7 @@ slack.on(RTM_EVENTS.MESSAGE, function(message) {
                         username: "Issues Bot",
                         icon_emoji: ":whale:"
                     }
+                    console.warn(attachment);
                     web.chat.postMessage(channel, '', data, function() {});
                 } else if (json.message == 'Not Found') {
                     var data = {
