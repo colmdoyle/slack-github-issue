@@ -44,7 +44,7 @@ slack.on(RTM_EVENTS.MESSAGE, function(message) {
         } else if (message.text.indexOf('<') > -1) {
           var issueNumWithExtraChar = message.text.substr(message.text.indexOf('<')).split('/')[6];
           // TODO - Remove KitmanLabs hardcoding.
-          if (/^(<https:\/\/github.com\/KitmanLabs\/projects\/issues\/[0-9]+>)$/.test(message.text.substr(message.text.indexOf('<')).split(' ')[0])) {
+          if (/^(<https:\/\/github.com\/KitmanLabs\/projects\/issues\/[0-9]+>)$/i.test(message.text.substr(message.text.indexOf('<')).split(' ')[0])) {
             var issueNum = '#' + issueNumWithExtraChar.substr(0, issueNumWithExtraChar.indexOf('>'))
           }
         }
